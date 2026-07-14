@@ -21,6 +21,7 @@ import {
   IExercisePickerSelectedExercise,
   IExercisePickerState,
   IExerciseType,
+  IHistoryRecord,
   ISettings,
 } from "../../types";
 import { IPlannerProgramExercise } from "../../pages/planner/models/types";
@@ -70,6 +71,7 @@ import {
 import { IconCheckCircle } from "../icons/iconCheckCircle";
 import { exercisePickerSortNames } from "./exercisePickerFilter";
 import { Scroller } from "../scroller";
+import { History_getExerciseUsageCounts } from "../../models/history";
 
 interface IProps {
   isHidden: boolean;
@@ -78,6 +80,7 @@ interface IProps {
   onStar: (key: string) => void;
   onChoose: (selectedExercises: IExercisePickerSelectedExercise[]) => void;
   usedExerciseTypes: IExerciseType[];
+  history: IHistoryRecord[];
   state: IExercisePickerState;
   evaluatedProgram?: IEvaluatedProgram;
   onClose: () => void;
@@ -172,6 +175,11 @@ export function ExercisePickerMain(props: IProps): JSX.Element {
 
   const useRankOrdering = !!search && !(sort === "similar_muscles" && exerciseType);
 
+  const usageCounts = useMemo(
+    () => (sort === "most_popular" ? History_getExerciseUsageCounts(props.history) : undefined),
+    [sort, props.history]
+  );
+
   const builtinExercises = useMemo(() => {
     let result = Exercise_allExpanded({});
     result = ExercisePickerUtils_filterExercises(result, filters, settings);
@@ -184,10 +192,10 @@ export function ExercisePickerMain(props: IProps): JSX.Element {
         : result.filter((e) => Exercise_matchesQuery(e, search));
     }
     if (!useRankOrdering) {
-      result = ExercisePickerUtils_sortExercises(result, settings, { filters, sort, exerciseType });
+      result = ExercisePickerUtils_sortExercises(result, settings, { filters, sort, exerciseType, usageCounts });
     }
     return result;
-  }, [search, useRankOrdering, filters, sort, settings, exerciseType]);
+  }, [search, useRankOrdering, filters, sort, settings, exerciseType, usageCounts]);
 
   const customExercises = useMemo(() => {
     const exercises = ExercisePickerUtils_filterCustomExercises(settings.exercises, filters);
@@ -202,7 +210,7 @@ export function ExercisePickerMain(props: IProps): JSX.Element {
       list = CollectionUtils_compact(ObjectUtils_values(exercises)).filter((e) => !e.isDeleted);
     }
     if (!useRankOrdering) {
-      list = ExercisePickerUtils_sortCustomExercises(list, settings, { filters, sort, exerciseType });
+      list = ExercisePickerUtils_sortCustomExercises(list, settings, { filters, sort, exerciseType, usageCounts });
     }
     if (filters.isStarred) {
       list = list.filter((e) => settings.starredExercises?.[Exercise_toKey(e)]);
@@ -212,7 +220,7 @@ export function ExercisePickerMain(props: IProps): JSX.Element {
       key: Exercise_toKey(raw),
       exercise: Exercise_get({ id: raw.id }, settings.exercises),
     }));
-  }, [settings, search, useRankOrdering, filters, sort, exerciseType]);
+  }, [settings, search, useRankOrdering, filters, sort, exerciseType, usageCounts]);
 
   const currentWeek: IEvaluatedProgramWeek | undefined = weeks[currentWeekIndex] ?? weeks[0];
   const programGroups = useMemo<IProgramGroup[]>(() => {

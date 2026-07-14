@@ -6,6 +6,7 @@ import {
   IExercisePickerSelectedExercise,
   IExercisePickerState,
   IExerciseType,
+  IHistoryRecord,
   ISettings,
 } from "../../types";
 import { ExercisePickerMain } from "./exercisePickerMain";
@@ -21,6 +22,7 @@ interface IExercisePickerContentProps {
   settings: ISettings;
   exercisePicker: IExercisePickerState;
   usedExerciseTypes: IExerciseType[];
+  history: IHistoryRecord[];
   onStar: (key: string) => void;
   onChangeSettings: (settings: IExercisePickerSettings) => void;
   onChangeCustomExercise: (action: "upsert" | "delete", exercise: ICustomExercise, notes?: string) => void;
@@ -41,6 +43,7 @@ export function ExercisePickerContent(props: IExercisePickerContentProps): JSX.E
         onStar={props.onStar}
         isHidden={false}
         usedExerciseTypes={props.usedExerciseTypes}
+        history={props.history}
         onChoose={props.onChoose}
         state={state}
         settings={props.settings}

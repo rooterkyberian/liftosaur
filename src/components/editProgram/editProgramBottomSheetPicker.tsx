@@ -2,6 +2,7 @@ import type { JSX } from "react";
 import {
   IExercisePickerSelectedExercise,
   IExercisePickerState,
+  IHistoryRecord,
   IPlannerProgram,
   IProgram,
   ISettings,
@@ -112,6 +113,7 @@ interface IEditProgramBottomSheetPickerProps {
   program: IProgram;
   evaluatedProgram: IEvaluatedProgram;
   exercisePickerState?: IExercisePickerState;
+  history: IHistoryRecord[];
   isLoggedIn: boolean;
   dayData: IShortDayData;
   plannerExercise?: IPlannerProgramExercise;
@@ -135,6 +137,7 @@ export function EditProgramBottomSheetPicker(props: IEditProgramBottomSheetPicke
       settings={props.settings}
       isHidden={exercisePickerState == null}
       exercisePicker={exercisePickerState}
+      history={props.history}
       isLoggedIn={props.isLoggedIn}
       evaluatedProgram={props.evaluatedProgram}
       usedExerciseTypes={Program_getExerciseTypesForWeekDay(

@@ -38,6 +38,7 @@ import { StringUtils_dashcase } from "../utils/string";
 import { GroupHeader } from "./groupHeader";
 import { Settings_getNextTargetType } from "../models/settings";
 import { IPrevExerciseData } from "../models/history";
+import { ExercisePickerUtils_initialSort } from "./exercisePicker/exercisePickerUtils";
 import { DateUtils_format } from "../utils/date";
 import { IDispatch } from "../ducks/types";
 import { IEvaluatedProgram, IEvaluatedProgramDay, Program_getProgramExerciseForKeyAndDay } from "../models/program";
@@ -155,7 +156,7 @@ function WorkoutExerciseCardInner(props: IWorkoutExerciseCardProps): JSX.Element
             state: {
               mode: "workout",
               screenStack: ["exercisePicker"],
-              sort: pickerSort ?? "name_asc",
+              sort: ExercisePickerUtils_initialSort(pickerSort, entryExercise),
               filters: {},
               selectedExercises: [],
               entryIndex,

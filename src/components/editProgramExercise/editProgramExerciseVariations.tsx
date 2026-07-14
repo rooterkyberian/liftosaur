@@ -19,6 +19,7 @@ import {
 } from "../editProgram/editProgramUi/editProgramUiHelpers";
 import { EditProgram_migrateExerciseStateKey } from "../../models/editProgram";
 import { LinkButton } from "../linkButton";
+import { ExercisePickerUtils_initialSort } from "../exercisePicker/exercisePickerUtils";
 
 interface IEditProgramExerciseVariationsProps {
   plannerExercise: IPlannerProgramExercise;
@@ -37,7 +38,7 @@ function buildVariationPickerState(
   return {
     mode: "program",
     screenStack: ["exercisePicker"],
-    sort: exerciseType ? (settings.workoutSettings.pickerSort ?? "name_asc") : "name_asc",
+    sort: ExercisePickerUtils_initialSort(settings.workoutSettings.pickerSort, exerciseType),
     filters: {},
     exerciseType,
     selectedTab: 0,

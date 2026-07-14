@@ -1,6 +1,10 @@
 import "mocha";
 import { expect } from "chai";
-import { History_getMaxWeightSetFromEntry, History_buildPrevExerciseData } from "../src/models/history";
+import {
+  History_getMaxWeightSetFromEntry,
+  History_buildPrevExerciseData,
+  History_buildExerciseUsageCounts,
+} from "../src/models/history";
 import { IHistoryEntry, IHistoryRecord, ISet, IExerciseType } from "../src/types";
 import { UidFactory_generateUid } from "../src/utils/generator";
 import { Exercise_toKey } from "../src/models/exercise";
@@ -152,6 +156,49 @@ describe("History", () => {
       const history = [buildRecord(now - 5 * day, [buildEntry(squat, true), buildEntry(squat, true)])];
       const data = History_buildPrevExerciseData(history, now);
       expect(data[Exercise_toKey(squat)].count).to.eql(1);
+    });
+  });
+
+  describe(".buildExerciseUsageCounts()", () => {
+    const squat: IExerciseType = { id: "squat", equipment: "barbell" };
+    const bench: IExerciseType = { id: "benchPress", equipment: "barbell" };
+    const now = 1_000_000_000_000;
+    const day = 24 * 60 * 60 * 1000;
+
+    it("counts records containing each exercise, keyed both with and without equipment", () => {
+      const history = [
+        buildRecord(now - 10 * day, [buildEntry(squat, true)]),
+        buildRecord(now - 3 * day, [buildEntry(squat, true), buildEntry(bench, true)]),
+      ];
+      const counts = History_buildExerciseUsageCounts(history, now - 30 * day);
+      expect(counts[Exercise_toKey(squat)]).to.eql(2);
+      expect(counts.squat).to.eql(2);
+      expect(counts[Exercise_toKey(bench)]).to.eql(1);
+      expect(counts.benchPress).to.eql(1);
+    });
+
+    it("counts a record once even if the exercise appears in multiple entries", () => {
+      const history = [buildRecord(now - 5 * day, [buildEntry(squat, true), buildEntry(squat, true)])];
+      const counts = History_buildExerciseUsageCounts(history, now - 30 * day);
+      expect(counts[Exercise_toKey(squat)]).to.eql(1);
+    });
+
+    it("excludes records before sinceTime", () => {
+      const history = [
+        buildRecord(now - 40 * day, [buildEntry(squat, true)]),
+        buildRecord(now - 5 * day, [buildEntry(squat, true)]),
+      ];
+      const counts = History_buildExerciseUsageCounts(history, now - 30 * day);
+      expect(counts[Exercise_toKey(squat)]).to.eql(1);
+    });
+
+    it("excludes the in-progress record", () => {
+      const history = [
+        buildRecord(now - 5 * day, [buildEntry(squat, true)]),
+        { ...buildRecord(now - 1 * day, [buildEntry(squat, true)]), id: 0 },
+      ];
+      const counts = History_buildExerciseUsageCounts(history, now - 30 * day);
+      expect(counts[Exercise_toKey(squat)]).to.eql(1);
     });
   });
 });

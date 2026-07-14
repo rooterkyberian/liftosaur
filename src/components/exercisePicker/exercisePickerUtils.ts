@@ -23,6 +23,7 @@ import {
   ICustomExercise,
   IExercisePickerFilters,
   IExercisePickerProgramExercise,
+  IExercisePickerSort,
   IExercisePickerState,
   IExerciseType,
   IMuscle,
@@ -133,7 +134,17 @@ export function ExercisePickerUtils_getSelectedMuscleGroups(
   });
 }
 
-export type IExercisePickerSortCtx = Pick<IExercisePickerState, "filters" | "sort" | "exerciseType">;
+export type IExercisePickerSortCtx = Pick<IExercisePickerState, "filters" | "sort" | "exerciseType"> & {
+  usageCounts?: Partial<Record<string, number>>;
+};
+
+export function ExercisePickerUtils_initialSort(
+  pickerSort: IExercisePickerSort | undefined,
+  exerciseType?: IExerciseType
+): IExercisePickerSort {
+  const sort = pickerSort ?? "name_asc";
+  return sort === "similar_muscles" && exerciseType == null ? "name_asc" : sort;
+}
 
 export function ExercisePickerUtils_sortExercises(
   exercises: IExercise[],
@@ -167,6 +178,11 @@ export function ExercisePickerUtils_getSortRating(
   const sort = ctx.sort;
   const currentExerciseType = ctx.exerciseType;
   const exerciseType = currentExerciseType;
+  if (sort === "most_popular") {
+    const aCount = ctx.usageCounts?.[Exercise_toKey(a)] ?? 0;
+    const bCount = ctx.usageCounts?.[Exercise_toKey(b)] ?? 0;
+    return bCount !== aCount ? bCount - aCount : a.name.localeCompare(b.name);
+  }
   if (sort === "similar_muscles" && exerciseType) {
     const aRating = Exercise_similarRating(exerciseType, a, settings);
     const bRating = Exercise_similarRating(exerciseType, b, settings);
