@@ -5,6 +5,7 @@ import { Text } from "./primitives/text";
 import { IDispatch } from "../ducks/types";
 import { IHistoryEntry, IHistoryRecord, IProgram, IProgramState, ISettings, IStats, ISubscription } from "../types";
 import { IState, updateProgress, updateState } from "../models/state";
+import { ExercisePickerUtils_initialSort } from "./exercisePicker/exercisePickerUtils";
 import { Thunk_postevent, Thunk_pushScreen, Thunk_finishProgramDay, Thunk_saveWorkoutToHealth } from "../ducks/thunks";
 import { IconMuscles2 } from "./icons/iconMuscles2";
 import {
@@ -575,6 +576,7 @@ function WorkoutThumbnailsStripInner(props: IWorkoutThumbnailsStripProps): JSX.E
     prevEntriesLengthRef.current = curr;
   }, [props.progress.entries.length]);
 
+  const pickerSort = props.settings.workoutSettings.pickerSort;
   const onAddExercise = useCallback(() => {
     updateState(
       dispatch,
@@ -586,7 +588,7 @@ function WorkoutThumbnailsStripInner(props: IWorkoutThumbnailsStripProps): JSX.E
             state: {
               mode: "workout",
               screenStack: ["exercisePicker"],
-              sort: "name_asc",
+              sort: ExercisePickerUtils_initialSort(pickerSort),
               filters: {},
               selectedExercises: [],
             },
@@ -594,7 +596,7 @@ function WorkoutThumbnailsStripInner(props: IWorkoutThumbnailsStripProps): JSX.E
       ],
       "Open exercise picker"
     );
-  }, [dispatch, progressId]);
+  }, [dispatch, progressId, pickerSort]);
 
   const onDragEnd = useCallback(
     (startIndex: number, endIndex: number) => {

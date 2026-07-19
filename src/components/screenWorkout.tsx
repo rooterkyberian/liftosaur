@@ -10,6 +10,7 @@ import {
   History_pauseWorkoutAction,
 } from "../models/history";
 import { Progress_lbProgress, Progress_isCurrent } from "../models/progress";
+import { ExercisePickerUtils_initialSort } from "./exercisePicker/exercisePickerUtils";
 import { INavCommon, updateState } from "../models/state";
 import { DateUtils_format } from "../utils/date";
 import { TimeUtils_formatHHMM } from "../utils/time";
@@ -63,7 +64,7 @@ function ScreenWorkoutInner(props: IScreenWorkoutProps): JSX.Element | null {
               state: {
                 mode: "workout",
                 screenStack: ["exercisePicker"],
-                sort: "name_asc",
+                sort: ExercisePickerUtils_initialSort(settings.workoutSettings.pickerSort),
                 filters: {},
                 selectedExercises: [],
               },

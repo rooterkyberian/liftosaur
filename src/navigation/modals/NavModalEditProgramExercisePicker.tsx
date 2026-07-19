@@ -354,6 +354,7 @@ export function NavModalEditProgramExercisePicker(): JSX.Element {
           isLoggedIn={!!state.user?.id}
           exercisePicker={exercisePickerState}
           usedExerciseTypes={usedExerciseTypes}
+          history={state.storage.history}
           evaluatedProgram={evaluatedProgram}
           dispatch={pickerDispatch}
           onChoose={onChoose}

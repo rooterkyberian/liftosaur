@@ -45,6 +45,7 @@ interface IProps {
 export const exercisePickerSortNames = {
   name_asc: "Name, A to Z",
   similar_muscles: "Similar Muscles",
+  most_popular: "Most Popular (Last Year)",
 };
 
 type IFilterValue = { label: string; isSelected: boolean; disabledReason?: string };
@@ -56,6 +57,10 @@ export function ExercisePickerFilter(props: IProps): JSX.Element {
       label: exercisePickerSortNames.similar_muscles,
       isSelected: props.state.sort === "similar_muscles",
       disabledReason: props.state.exerciseType != null ? undefined : "Enabled only for swap/edit",
+    },
+    most_popular: {
+      label: exercisePickerSortNames.most_popular,
+      isSelected: props.state.sort === "most_popular",
     },
   };
   const gymEquipment = Equipment_getCurrentGym(props.settings).equipment;

@@ -245,7 +245,7 @@ export const percentageUnits = ["%"] as const;
 export const lengthUnits = ["in", "cm"] as const;
 export const historyRecordChange = ["order"] as const;
 export const targetTypes = ["target", "lasttime", "platescalculator", "e1rm"] as const;
-export const exercisePickerSorts = ["name_asc", "similar_muscles"] as const;
+export const exercisePickerSorts = ["name_asc", "similar_muscles", "most_popular"] as const;
 
 export const screenMuscles: string[] = [
   "shoulders",

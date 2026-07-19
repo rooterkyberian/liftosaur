@@ -520,6 +520,39 @@ export function History_buildPrevExerciseData(
   return result;
 }
 
+// Counts include both the full "id_equipment" key and an id-only bucket: builtin picker rows are
+// always keyed with equipment, while custom exercise rows are keyed by bare id, so both can look
+// up their count from the same map without colliding.
+export function History_buildExerciseUsageCounts(
+  history: IHistoryRecord[],
+  sinceTime: number
+): Partial<Record<string, number>> {
+  const counts: Partial<Record<string, number>> = {};
+  for (const hr of history) {
+    if (Progress_isCurrent(hr) || hr.startTime < sinceTime) {
+      continue;
+    }
+    const seenKeys = new Set<string>();
+    for (const entry of hr.entries) {
+      for (const key of [Exercise_toKey(entry.exercise), entry.exercise.id]) {
+        if (!seenKeys.has(key)) {
+          seenKeys.add(key);
+          counts[key] = (counts[key] ?? 0) + 1;
+        }
+      }
+    }
+  }
+  return counts;
+}
+
+const yearMs = 365 * 24 * 60 * 60 * 1000;
+export const History_getExerciseUsageCounts = memoize(
+  (history: IHistoryRecord[]): Partial<Record<string, number>> => {
+    return History_buildExerciseUsageCounts(history, Date.now() - yearMs);
+  },
+  { maxSize: 5 }
+);
+
 export function History_collectWeightPersonalRecord(
   exerciseType: IExerciseType,
   unit: IUnit

@@ -3,6 +3,7 @@ import { IPlannerProgramExercise, IPlannerState } from "../../pages/planner/mode
 import { ILensDispatch } from "../../utils/useLensReducer";
 import { IExercisePickerState, ISettings } from "../../types";
 import { UndoingFlag_set } from "../../utils/undoingFlag";
+import { ExercisePickerUtils_initialSort } from "../exercisePicker/exercisePickerUtils";
 
 export function applyChangesInEditor(plannerDispatch: ILensDispatch<IPlannerState>, cb: () => void): void {
   UndoingFlag_set(true);
@@ -27,7 +28,7 @@ export function pickerStateFromPlannerExercise(
   return {
     mode: "program",
     screenStack: ["exercisePicker"],
-    sort: plannerExercise?.exerciseType ? (settings.workoutSettings.pickerSort ?? "name_asc") : "name_asc",
+    sort: ExercisePickerUtils_initialSort(settings.workoutSettings.pickerSort, plannerExercise?.exerciseType),
     filters: {},
     label: plannerExercise?.label,
     templateName,
